@@ -9,7 +9,7 @@
 <body>
 <?php
     include('conectar.php');
-    include('menu.php');
+
   
 ?>
 

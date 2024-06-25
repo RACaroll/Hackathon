@@ -18,6 +18,7 @@
 
 
 <body>
+    
 <?php
     include('conectar.php');
     
@@ -139,91 +140,56 @@
     </header>
 <br>
 
-<?php
-
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
-    // Inclui o arquivo de conexão com o banco de dados
-    require('conectar.php');
-
-    $nomeAluno=$_POST['nomeAluno'];
-    $telefone = $_POST['telefone'];
-    $email = $_POST['email'];
-    $dtNasc = $_POST['dtNasc'];
-
-    $sql = "INSERT INTO cadastroAluno(nomeAluno, telefone, email, dtNasc) VALUES (?,?,?,?)";
-   
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssss",$nomeAluno,$telefone,$email,$dtNasc);
-
-    if ($stmt->execute()) {
-        echo "Aluno cadastrado com sucesso!";
-    } else {
-        echo "Erro ao cadastrar o Aluno: " . $conn->error;
-    }
-
-    // Fecha a declaração e a conexão com o banco de dados
-    $stmt->close();
-    $conn->close();
-}
-
-    
-?>
-
-
     <main class="container col-md">
-        <h1>Formulário de Cadastro</h1>
+        <h1>Valide seu cadastro</h1>
         <form class="needs-validation" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="row g-3">
                 <div class="col-md-12">
-                    <label for="nomeAluno" class="form-label">Nome:</label>
-                    <input name="nomeAluno" type="text" class="form-control" id="nomeAluno" placeholder="" value="" required="">
-                    <div class="invalid-feedback">
-                        Verifique se o nome está correto.
-                    </div>
+                <label for="nomeAluno">Nome:</label>
+                <select id="nomeAluno" name="nomeAluno">
+                 <option value="">Selecione seu nome</option>
+                 <?php
+        // Conexão com o banco de dados
+        require('conectar.php');
+        $nomeAluno=$_POST['nomeAluno'];
+
+        // Consulta para buscar as montadoras
+        $sql = "SELECT nomeAluno FROM cadastroaluno ORDER BY nomeAluno ASC";
+
+        $result = $conn->query($sql);
+
+        // Verificação se há montadoras cadastradas
+        if ($result->num_rows > 0) {
+            // Loop para exibir as montadoras como opções no select
+            while($row = $result->fetch_assoc()) {
+                echo "<option value='" . $row["idAluno"]. "'>" . $row["nomeAluno"]. "</option>";
+            }
+        } else {
+            echo "<option value=''>Nenhum Aluno cadastrado</option>";
+        }
+
+        // Fechamento da conexão com o banco de dados
+        $conn->close();
+        ?>
+             </div>
                 </div>
-
-<!-- buscar no banco!-->
-                <div class="col-md-8">
-                    <label for="curso" class="form-label">Curso:</label>
-                    <select name="curso" class="form-select" id="curso" required="">
-                        <option value="">Escolha...</option>
-                        <option>Desenvolvimento de Sistemas(Noturno)</option>
-                        <option>Administração</option>
-                        <option>Enfermagem</option>
-                        <option>Design Gráfico</option>
-                    </select>
-                    <div class="invalid-feedback">
-                        Por favor insira uma curso válido.
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <label for="telefone" class="form-label">Telefone</label>
-                    <input name="telefone" type="text" class="form-control" id="telefone" placeholder="" required="">
-                    <div class="invalid-feedback">
-                        Por favor entre com um telefone válido.
-                    </div>
-                </div>
-
-
-                <div class="col-md-6">
-                    <label for="email" class="form-label">E-mail</label>
-                    <input name="email" type="text" class="form-control" id="email" placeholder="" required="">
-                    <div class="invalid-feedback">
-                        Por favor insira um E-mail válido.
-                    </div>
-                </div>
-
-
-
+   
                 <div class="col-md-4">
                     <label for="dtNasc" class="form-label">Data de Nascimento:</label>
                     <input name="dtNasc" type="date" class="form-control" id="dtNasc" placeholder="" required="">
                     <div class="invalid-feedback">
                         Por favor insira uma data compatível.
+
                     </div>
+
+
                 </div>
 
-            </div> <br> <button  type="submit" name="submitEnviar"  class="btn btn-primary">Salvar</button>
+            </div>
+          
+      
+            
+            <br> <button  type="submit" name="submitEnviar"  class="btn btn-primary">Salvar</button>
             <svg class="bi ms-1" width="20" height="50"><use xlink:href="#arrow-right-short"></use></svg>
         </form>
     </main>
