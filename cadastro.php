@@ -1,22 +1,27 @@
-
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro</title>
+    
+   
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="style/folha.css">
 </head>
 
 
 <body>
+<?php
+    include('conectar.php');
+    include('menu.php');
+ ?>
     <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
         <symbol id="check2" viewBox="0 0 16 16">
             <path
@@ -40,6 +45,7 @@
             </path>
         </symbol>
     </svg>
+
 
 
     <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
@@ -132,24 +138,55 @@
         </div>
     </header>
 <br>
+<?php
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
+    // Inclui o arquivo de conexão com o banco de dados
+    require('conectar.php');
+
+    $nomeAluno=$_POST['nomeAluno'];
+    $telefone = $_POST['telefone'];
+    $email = $_POST['email'];
+    $dtNasc = $_POST['dtNasc'];
+
+    $sql = "INSERT INTO cadastroAluno(nomeAluno, telefone, email, dtNasc) VALUES (?,?,?,?)";
+   
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssss",$nomeAluno,$telefone,$email,$dtNasc);
+
+    if ($stmt->execute()) {
+        echo "Proprietário cadastrado com sucesso!";
+    } else {
+        echo "Erro ao cadastrar o proprietário: " . $conn->error;
+    }
+
+    // Fecha a declaração e a conexão com o banco de dados
+    $stmt->close();
+    $conn->close();
+}
+
+    
+?>
+
+
     <main class="container col-md">
         <h1>Formulário de Cadastro</h1>
-        <form class="needs-validation">
+        <form class="needs-validation" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="row g-3">
                 <div class="col-md-12">
-                    <label for="Nome" class="form-label">Nome:</label>
-                    <input type="text" class="form-control" id="firstName" placeholder="" value="" required="">
+                    <label for="nomeAluno" class="form-label">Nome:</label>
+                    <input name="nomeAluno" type="text" class="form-control" id="nomeAluno" placeholder="" value="" required="">
                     <div class="invalid-feedback">
                         Verifique se o nome está correto.
                     </div>
                 </div>
 
-
+<!-- buscar no banco!-->
                 <div class="col-md-8">
-                    <label for="country" class="form-label">Curso:</label>
-                    <select class="form-select" id="curso" name= "curso" required="">
+                    <label for="curso" class="form-label">Curso:</label>
+                    <select name="curso" class="form-select" id="curso" required="">
                         <option value="">Escolha...</option>
-                        <option>Desenvolvimento de Sistemas</option>
+                        <option>Desenvolvimento de Sistemas(Noturno)</option>
                         <option>Administração</option>
                         <option>Enfermagem</option>
                         <option>Design Gráfico</option>
@@ -159,8 +196,8 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <label for="address" class="form-label">Telefone</label>
-                    <input type="text" class="form-control" id="address" placeholder="" required="">
+                    <label for="telefone" class="form-label">Telefone</label>
+                    <input name="telefone" type="text" class="form-control" id="telefone" placeholder="" required="">
                     <div class="invalid-feedback">
                         Por favor entre com um telefone válido.
                     </div>
@@ -168,8 +205,8 @@
 
 
                 <div class="col-md-6">
-                    <label for="address" class="form-label">E-mail</label>
-                    <input type="text" class="form-control" id="address" placeholder="" required="">
+                    <label for="email" class="form-label">E-mail</label>
+                    <input name="email" type="text" class="form-control" id="email" placeholder="" required="">
                     <div class="invalid-feedback">
                         Por favor insira um E-mail válido.
                     </div>
@@ -178,14 +215,14 @@
 
 
                 <div class="col-md-4">
-                    <label for="address" class="form-label">Data de Nascimento:</label>
-                    <input type="date" class="form-control" id="address" placeholder="" required="">
+                    <label for="dtNasc" class="form-label">Data de Nascimento:</label>
+                    <input name="dtNasc" type="date" class="form-control" id="dtNasc" placeholder="" required="">
                     <div class="invalid-feedback">
                         Por favor insira uma data compatível.
                     </div>
                 </div>
 
-            </div> <br> <button class="btn btn-primary" type="button">Salvar</button>
+            </div> <br> <button  type="submit" name="submitEnviar"  class="btn btn-primary">Salvar</button>
             <svg class="bi ms-1" width="20" height="50"><use xlink:href="#arrow-right-short"></use></svg>
         </form>
     </main>
