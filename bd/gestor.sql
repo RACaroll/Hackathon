@@ -1,8 +1,6 @@
-CREATE DATABASE  IF NOT EXISTS `gestor` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `gestor`;
--- MySQL dump 10.13  Distrib 8.0.36, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
 --
--- Host: 127.0.0.1    Database: gestor
+-- Host: localhost    Database: gestor
 -- ------------------------------------------------------
 -- Server version	8.0.34
 
@@ -95,6 +93,7 @@ CREATE TABLE `cursos` (
 
 LOCK TABLES `cursos` WRITE;
 /*!40000 ALTER TABLE `cursos` DISABLE KEYS */;
+INSERT INTO `cursos` VALUES (1,'Administração'),(2,'Contabilidade'),(3,'Desenvolvimento de Sistemas'),(4,'Design Gráfico'),(5,'Enfermagem'),(6,'Marketing'),(7,'Novotec Administração'),(8,'Novotec Contabilidade'),(9,'Novotec Desenvolvimento de Sistemas'),(10,'Novotec Marketing'),(11,'Novotec Meio Ambiente'),(12,'Recursos Humanos');
 /*!40000 ALTER TABLE `cursos` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -107,4 +106,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-06-25 19:23:52
+-- Dump completed on 2024-06-25 19:55:57

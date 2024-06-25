@@ -186,10 +186,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
                     <label for="curso" class="form-label">Curso:</label>
                     <select name="curso" class="form-select" id="curso" required="">
                         <option value="">Escolha...</option>
-                        <option>Desenvolvimento de Sistemas(Noturno)</option>
-                        <option>Administração</option>
-                        <option>Enfermagem</option>
-                        <option>Design Gráfico</option>
                     </select>
                     <div class="invalid-feedback">
                         Por favor insira uma curso válido.
