@@ -146,31 +146,34 @@
             <div class="row g-3">
                 <div class="col-md-12">
                 <label for="nomeAluno">Nome:</label>
-                <select id="nomeAluno" name="nomeAluno">
-                 <option value="">Selecione seu nome</option>
-                 <?php
-        // Conexão com o banco de dados
+                <input id="nomeAluno" name="nomeAluno">
+        <?php
         require('conectar.php');
-        $nomeAluno=$_POST['nomeAluno'];
+        $nomeAluno = $_POST['nomeAluno'];
+        $dtNasc = $_POST['dtNasc'];
 
-        // Consulta para buscar as montadoras
-        $sql = "SELECT nomeAluno FROM cadastroaluno ORDER BY nomeAluno ASC";
+$sql = "SELECT * FROM cadastroaluno WHERE nomeAluno = ? AND dtNasc = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("ss", $nomeAluno, $dtNasc);
+$stmt->execute();
+$result = $stmt->get_result();
 
-        $result = $conn->query($sql);
+if ($result->num_rows > 0) {
+    echo "Aluno encontrado!";
+    while ($row = $result->fetch_assoc()) {
+        echo "Nome do Aluno: " . $row['nomeAluno'];
+    }
+    
+} else {
+    echo "Nenhum aluno cadastrado com esse nome.";
+}
 
-        // Verificação se há montadoras cadastradas
-        if ($result->num_rows > 0) {
-            // Loop para exibir as montadoras como opções no select
-            while($row = $result->fetch_assoc()) {
-                echo "<option value='" . $row["idAluno"]. "'>" . $row["nomeAluno"]. "</option>";
-            }
-        } else {
-            echo "<option value=''>Nenhum Aluno cadastrado</option>";
-        }
 
-        // Fechamento da conexão com o banco de dados
-        $conn->close();
-        ?>
+
+$stmt->close();
+$conn->close();
+?>
+        
              </div>
                 </div>
    
