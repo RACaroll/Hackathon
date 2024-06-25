@@ -6,6 +6,12 @@
     <title>Gerenciador de currículos</title>
 </head>
 <body>
+<?php
+    include('conectar.php');
+
+    echo "ola";
+?>
+
     
 </body>
 </html>
