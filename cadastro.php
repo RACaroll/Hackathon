@@ -149,7 +149,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
     $email = $_POST['email'];
     $dtNasc = $_POST['dtNasc'];
 
-    $sql = "INSERT INTO gestor(nomeAluno, telefone, email, dtNasc) VALUES (?,?,?,?)";
+    $sql = "INSERT INTO cadastroAluno(nomeAluno, telefone, email, dtNasc) VALUES (?,?,?,?)";
    
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ssss",$nomeAluno,$telefone,$email,$dtNasc);
@@ -197,7 +197,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
                 </div>
                 <div class="col-md-4">
                     <label for="telefone" class="form-label">Telefone</label>
-                    <input name="telefone "type="text" class="form-control" id="telefone" placeholder="" required="">
+                    <input name="telefone" type="text" class="form-control" id="telefone" placeholder="" required="">
                     <div class="invalid-feedback">
                         Por favor entre com um telefone válido.
                     </div>
