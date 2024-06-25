@@ -30,16 +30,16 @@
 
   <div class="container">
     <div class="row justify-content-center align-items-center" style="height: 100px;">
-      <div class="col-md-5">
+      <div class="col-md-6">
         <div class="card card-center">
           <div class="card-body">
             <h5 class="card-title">Envie aqui seu currículo em PDF</h5>
-            <form enctype="multipart/form-data">
+            <form id="meuFormulario" enctype="multipart/form-data" onsubmit="return redirecionarAposEnviar()">
               <div class="form-group">
                 <input type="file" class="form-control-file" id="exampleFormControlFile1" accept=".pdf" onchange="checkFileSize(this)">
               </div>
               <small class="text-muted">Tamanho máximo: 5MB.</small><br><br>
-              <a href="#" class="btn btn-primary">Enviar</a>
+              <button type="submit" class="btn btn-primary">Enviar</button>
             </form>
           </div>
         </div>
@@ -53,19 +53,34 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
   <script>
-    function checkFileSize(input) {
-      if (input.files.length > 0) {
-        var fileSize = input.files[0].size; // Tamanho do arquivo em bytes
-        var fileSizeInMB = fileSize / (1024 * 1024); // Tamanho do arquivo em MB
-
-        // Verifica se o tamanho é maior que 5MB
-        if (fileSizeInMB > 5) {
-          alert('O arquivo selecionado excede o limite de tamanho de 5MB.');
-          // Limpar o input file (opcional)
-          input.value = '';
-        }
+    function redirecionarAposEnviar() {
+      var form = document.getElementById('meuFormulario');
+      var inputFile = form.querySelector('input[type=file]');
+      
+     
+      if (inputFile.files.length > 0) {
+        window.location.href = "./curriculosEnviados";
+        return false;
+      } else {
+        alert('Por favor, selecione um arquivo para enviar.');
+        return false;
       }
     }
+
+    function checkFileSize(input) {
+      if (input.files.length > 0) {
+        var fileSize = input.files[0].size;
+        var fileSizeInMB = fileSize / (1024 * 1024);
+
+        if (fileSizeInMB > 5) {
+          alert('O arquivo selecionado excede o limite de tamanho de 5MB.');
+          input.value = '';
+          return false;
+        }
+      }
+      return true;
+    }
+
   </script>
 </body>
 </html>
