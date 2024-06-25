@@ -171,20 +171,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
 
     <main class="container col-md">
         <h1>Formulário de Cadastro</h1>
-        <form class="needs-validation">
+        <form class="needs-validation" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="row g-3">
                 <div class="col-md-12">
                     <label for="nomeAluno" class="form-label">Nome:</label>
-                    <input type="text" class="form-control" id="nomeAluno" placeholder="" value="" required="">
+                    <input name="nomeAluno" type="text" class="form-control" id="nomeAluno" placeholder="" value="" required="">
                     <div class="invalid-feedback">
                         Verifique se o nome está correto.
                     </div>
                 </div>
 
-
+<!-- buscar no banco!-->
                 <div class="col-md-8">
                     <label for="curso" class="form-label">Curso:</label>
-                    <select  class="form-select" id="curso" required="">
+                    <select name="curso" class="form-select" id="curso" required="">
                         <option value="">Escolha...</option>
                         <option>Desenvolvimento de Sistemas(Noturno)</option>
                         <option>Administração</option>
@@ -196,8 +196,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <label for="address" class="form-label">Telefone</label>
-                    <input type="text" class="form-control" id="address" placeholder="" required="">
+                    <label for="telefone" class="form-label">Telefone</label>
+                    <input name="telefone "type="text" class="form-control" id="telefone" placeholder="" required="">
                     <div class="invalid-feedback">
                         Por favor entre com um telefone válido.
                     </div>
@@ -205,8 +205,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
 
 
                 <div class="col-md-6">
-                    <label for="address" class="form-label">E-mail</label>
-                    <input type="text" class="form-control" id="address" placeholder="" required="">
+                    <label for="email" class="form-label">E-mail</label>
+                    <input name="email" type="text" class="form-control" id="email" placeholder="" required="">
                     <div class="invalid-feedback">
                         Por favor insira um E-mail válido.
                     </div>
@@ -215,14 +215,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
 
 
                 <div class="col-md-4">
-                    <label for="address" class="form-label">Data de Nascimento:</label>
-                    <input type="date" class="form-control" id="address" placeholder="" required="">
+                    <label for="dtNasc" class="form-label">Data de Nascimento:</label>
+                    <input name="dtNasc" type="date" class="form-control" id="dtNasc" placeholder="" required="">
                     <div class="invalid-feedback">
                         Por favor insira uma data compatível.
                     </div>
                 </div>
 
-            </div> <br> <button type="submit" name="submitEnviar"  class="btn btn-primary">Salvar</button>
+            </div> <br> <button  type="submit" name="submitEnviar"  class="btn btn-primary">Salvar</button>
             <svg class="bi ms-1" width="20" height="50"><use xlink:href="#arrow-right-short"></use></svg>
         </form>
     </main>
