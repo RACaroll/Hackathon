@@ -204,41 +204,59 @@
                     <svg class="bi ms-1" width="20" height="50"><use xlink:href="#arrow-right-short"></use></svg>
                 </form>
             </div>
-            
-        <?php
-        require('conectar.php');
-        $nomeAluno = $_POST['nomeAluno'];
-        $dtNasc = $_POST['dtNasc'];
-        $curso = $_POST['curso'];
-        $dataEnvio = date('Y-m-d');
-        $caminho = __DIR__;
-        $nomeArquivo = basename($caminho);
+            <?php
+require('conectar.php');
 
-$sql = "SELECT * FROM cadastroaluno WHERE nomeAluno = ? AND dtNasc = ?";
-$idAluno = $conn->insert_id;
-$curso = $conn->insert_id;
+$nomeAluno = $_POST['nomeAluno'];
+$dtNasc = $_POST['dtNasc'];
+$curso = $_POST['curso'];
+$dataEnvio = date('Y-m-d');
+$caminho = __DIR__;
+$nomeArquivo = basename($caminho);
+
+// Prepare and execute the first SELECT query
+$sql = "SELECT idAluno FROM cadastroaluno WHERE nomeAluno = ? AND dtNasc = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("ss", $nomeAluno, $dtNasc);
 $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
-    
-    $sql = "SELECT * FROM curriculo WHERE aluno = '$idAluno' AND curso = '$curso'";
-    $sql = "INSERT INTO curriculo(nomeArquivo, dataEnvio, caminho) VALUES (?, ?, ?)";
+    // Fetch the student's ID
+    $row = $result->fetch_assoc();
+    $idAluno = $row['idAluno'];
+
+    // Prepare and execute the second SELECT query
+    $sql = "SELECT * FROM curriculo WHERE aluno = ? AND curso = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sss", $nomeArquivo, $dataEnvio, $caminho);
+    $stmt->bind_param("ii", $idAluno, $curso);
     $stmt->execute();
     $result = $stmt->get_result();
+
+    if ($result->num_rows == 0) {
+        // Insert the new curriculum entry
+        $sql = "INSERT INTO curriculo(nomeArquivo, dataEnvio, caminho, aluno, curso) VALUES (?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sssii", $nomeArquivo, $dataEnvio, $caminho, $idAluno, $curso);
+        $stmt->execute();
+
+        if ($stmt->affected_rows > 0) {
+            echo "Currículo inserido com sucesso.";
+        } else {
+            echo "Erro ao inserir o currículo.";
+        }
+    } else {
+        echo "Currículo já existe.";
+    }
 } else {
     echo "Nenhum aluno cadastrado com esse nome.";
 }
 
-
-
+// Close the statement and the connection
 $stmt->close();
 $conn->close();
 ?>
+
     </main>
     <footer class="container col-md">
         <br>
