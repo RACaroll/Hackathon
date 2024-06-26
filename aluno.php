@@ -146,30 +146,26 @@
             <div class="row g-3">
                 <div class="col-md-12">
                 <label for="nomeAluno">Nome:</label>
-                <select id="nomeAluno" name="nomeAluno">
-                 <option value="">Selecione seu nome</option>
+                <input type="text" id="nomeAluno" name="nomeAluno">
+                 
                  <?php
         // Conexão com o banco de dados
         require('conectar.php');
         $nomeAluno=$_POST['nomeAluno'];
+        $user=$_POST['nomeAluno'];
+        $senha=$_POST['dtNasc'];
 
         // Consulta para buscar as montadoras
-        $sql = "SELECT nomeAluno FROM cadastroaluno ORDER BY nomeAluno ASC";
+        $sqlAluno = "SELECT nomeAluno FROM cadastroaluno ORDER BY nomeAluno ASC";
+        $sqlValidação="SELECT * FROM cadastroaluno WHERE nomeAluno LIKE '$user' AND dtNasc LIKE '$senha'";
 
-        $result = $conn->query($sql);
+        $result = $conn->query($sqlAluno);
 
-        // Verificação se há montadoras cadastradas
-        if ($result->num_rows > 0) {
-            // Loop para exibir as montadoras como opções no select
-            while($row = $result->fetch_assoc()) {
-                echo "<option value='" . $row["idAluno"]. "'>" . $row["nomeAluno"]. "</option>";
-            }
-        } else {
-            echo "<option value=''>Nenhum Aluno cadastrado</option>";
-        }
+        // Verificação se há alunos cadastradas
+        
 
         // Fechamento da conexão com o banco de dados
-        $conn->close();
+        
         ?>
              </div>
                 </div>
@@ -191,6 +187,16 @@
             
             <br> <button  type="submit" name="submitEnviar"  class="btn btn-primary">Salvar</button>
             <svg class="bi ms-1" width="20" height="50"><use xlink:href="#arrow-right-short"></use></svg>
+        <?php
+        $resultado = $conn ->query($sqlValidação);
+        if($resultado->num_rows > 0){
+            echo "<p> subir arquivo</p>";
+        }else{
+            echo "<p> Usuário ou senha não existe</p>";
+        }
+        $conn->close();
+        ?>
+            
         </form>
     </main>
     <footer class="container col-md">
