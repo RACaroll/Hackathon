@@ -151,6 +151,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
     $dtNasc = $_POST['dtNasc'];
 
     $sql = "INSERT INTO cadastroAluno(nomeAluno, telefone, email, dtNasc) VALUES (?,?,?,?)";
+    
    
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ssss",$nomeAluno,$telefone,$email,$dtNasc);
