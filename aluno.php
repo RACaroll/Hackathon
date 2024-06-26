@@ -163,11 +163,11 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
-    // $sql = "INSERT INTO curriculo(aluno, curso, nomeArquivo, dataEnvio, caminho) VALUES (?, ?, ?, ?, ?)";
-    // $stmt = $conn->prepare($sql);
-    // $stmt->bind_param("issss", $nomeAluno, $curso, $nomeArquivo, $dataEnvio, $caminho);
-    // $stmt->execute();
-    // $result = $stmt->get_result();
+    $sql = "INSERT INTO curriculo(nomeArquivo, dataEnvio, caminho) VALUES (?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sss", $nomeArquivo, $dataEnvio, $caminho);
+    $stmt->execute();
+    $result = $stmt->get_result();
 } else {
     echo "Nenhum aluno cadastrado com esse nome.";
 }
