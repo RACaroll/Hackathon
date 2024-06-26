@@ -151,6 +151,10 @@
         require('conectar.php');
         $nomeAluno = $_POST['nomeAluno'];
         $dtNasc = $_POST['dtNasc'];
+        $curso = $_POST['curso'];
+        $dataEnvio = date('Y-m-d');
+        $caminho = __DIR__;
+        $nomeArquivo = basename($caminho);
 
 $sql = "SELECT * FROM cadastroaluno WHERE nomeAluno = ? AND dtNasc = ?";
 $stmt = $conn->prepare($sql);
@@ -159,11 +163,11 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
-    echo "Aluno encontrado!";
-    while ($row = $result->fetch_assoc()) {
-        echo "Nome do Aluno: " . $row['nomeAluno'];
-    }
-    
+    // $sql = "INSERT INTO curriculo(aluno, curso, nomeArquivo, dataEnvio, caminho) VALUES (?, ?, ?, ?, ?)";
+    // $stmt = $conn->prepare($sql);
+    // $stmt->bind_param("issss", $nomeAluno, $curso, $nomeArquivo, $dataEnvio, $caminho);
+    // $stmt->execute();
+    // $result = $stmt->get_result();
 } else {
     echo "Nenhum aluno cadastrado com esse nome.";
 }
@@ -189,10 +193,13 @@ $conn->close();
                 </div>
 
             </div>
-          
-      
-            
-            <br> <button  type="submit" name="submitEnviar"  class="btn btn-primary">Salvar</button>
+            <form id="meuFormulario" enctype="multipart/form-data" onsubmit="return redirecionarAposEnviar()">
+              <div class="form-group">
+                <input type="file" class="form-control-file" id="exampleFormControlFile1" accept=".pdf" onchange="checkFileSize(this)">
+              </div>
+              <small class="text-muted">Tamanho máximo: 5MB.</small><br><br>
+              <button  type="submit" name="submitEnviar"  class="btn btn-primary">Enviar</button>
+            </form>
             <svg class="bi ms-1" width="20" height="50"><use xlink:href="#arrow-right-short"></use></svg>
         </form>
     </main>
