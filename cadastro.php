@@ -196,19 +196,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
                 </div>
 
 <!-- buscar no banco!-->
-                <div class="col-md-8">
+<div class="col-md-8">
                     <label for="curso" class="form-label">Curso:</label>
                     <select name="curso" class="form-select" id="curso" required="">
-                        <option value="1">Escolha...</option>
-                        <option value="2">Desenvolvimento de Sistemas(Noturno)</option>
-                        <option value="3">Administração</option>
-                        <option value="4">Enfermagem</option>
-                        <option value="5">Design Gráfico</option>
-                    </select>
+                        <option value="">Escolha...</option>
+                  
                     <div class="invalid-feedback">
                         Por favor insira uma curso válido.
-                    </div>
-                </div>
+                <?php
+        // Conexão com o banco de dados
+        require('conectar.php');
+
+        $nomeCursos=$_POST['nomeCursos'];
+
+        // Consulta para buscar as montadoras
+        $sql = "SELECT * FROM cursos";
+
+        $result = $conn->query($sql);
+
+        // Verificação se há montadoras cadastradas
+        if ($result->num_rows > 0) {
+            // Loop para exibir as montadoras como opções no select
+            while($row = $result->fetch_assoc()) {
+                echo "<option value='" . $row["idCursos"]. "'>" . $row["nomeCursos"]. "</option>";
+            }
+        } else {
+            echo "<option value=''>Nenhum Curso cadastrado</option>";
+        }
+
+        // Fechamento da conexão com o banco de dados
+        $conn->close();
+        ?>
+          </select>
+             </div>
                 <div class="col-md-4">
                     <label for="telefone" class="form-label">Telefone</label>
                     <input name="telefone" type="text" class="form-control" id="telefone" placeholder="" required="">
