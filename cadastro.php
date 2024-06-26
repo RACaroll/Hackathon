@@ -149,15 +149,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
     $telefone = $_POST['telefone'];
     $email = $_POST['email'];
     $dtNasc = $_POST['dtNasc'];
+    $curso = $_POST['curso'];
 
     $sql = "INSERT INTO cadastroAluno(nomeAluno, telefone, email, dtNasc) VALUES (?,?,?,?)";
-    
-   
+    $aluno = "SELECT idAluno FROM cadastroaluno WHERE nomeAluno = '$nomeAluno'";
+    //$stmt = $conn->prepare($sql);
+//$stmt->bind_param("ss", $nomeAluno, $dtNasc);
+$idAluno = $conn->query($aluno);
+var_dump($idAluno);
+    //$idCurso = "SELECT idCurso FROM cursos WHERE nomeCursos = '$curso'";
+
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ssss",$nomeAluno,$telefone,$email,$dtNasc);
 
     if ($stmt->execute()) {
         echo "Aluno cadastrado com sucesso!";
+        $sql1 = "INSERT INTO curriculo(aluno, curso) VALUES (?,?)";
+        $stmt1 = $conn->prepare($sql1);
+        $stmt1->bind_param('ii',$idAluno[0],$curso);
+        if ($stmt1->execute()) {echo 'success';}
     } else {
         echo "Erro ao cadastrar o Aluno: " . $conn->error;
     }
@@ -187,11 +197,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
                 <div class="col-md-8">
                     <label for="curso" class="form-label">Curso:</label>
                     <select name="curso" class="form-select" id="curso" required="">
-                        <option value="">Escolha...</option>
-                        <option>Desenvolvimento de Sistemas(Noturno)</option>
-                        <option>Administração</option>
-                        <option>Enfermagem</option>
-                        <option>Design Gráfico</option>
+                        <option value="1">Escolha...</option>
+                        <option value="2">Desenvolvimento de Sistemas(Noturno)</option>
+                        <option value="3">Administração</option>
+                        <option value="4">Enfermagem</option>
+                        <option value="5">Design Gráfico</option>
                     </select>
                     <div class="invalid-feedback">
                         Por favor insira uma curso válido.
