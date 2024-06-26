@@ -140,39 +140,41 @@
 <br>
 
 <?php
-
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
     // Inclui o arquivo de conexão com o banco de dados
     require('conectar.php');
 
-    $nomeAluno=$_POST['nomeAluno'];
+    $nomeAluno = $_POST['nomeAluno'];
     $telefone = $_POST['telefone'];
     $email = $_POST['email'];
     $dtNasc = $_POST['dtNasc'];
     $curso = $_POST['curso'];
 
-    $sql = "INSERT INTO cadastroAluno(nomeAluno, telefone, email, dtNasc) VALUES (?,?,?,?)";
-    $aluno = "SELECT idAluno FROM cadastroaluno WHERE nomeAluno = '$nomeAluno'";
-    //$stmt = $conn->prepare($sql);
-//$stmt->bind_param("ss", $nomeAluno, $dtNasc);
-$idAluno = $conn->query($aluno);
-var_dump($idAluno);
-    //$idCurso = "SELECT idCurso FROM cursos WHERE nomeCursos = '$curso'";
-
+    // Prepara e executa a primeira consulta para inserir dados do aluno
+    $sql = "INSERT INTO cadastroAluno (nomeAluno, telefone, email, dtNasc) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssss",$nomeAluno,$telefone,$email,$dtNasc);
+    $stmt->bind_param("ssss", $nomeAluno, $telefone, $email, $dtNasc);
 
     if ($stmt->execute()) {
         echo "Aluno cadastrado com sucesso!";
-        $sql1 = "INSERT INTO curriculo(aluno, curso) VALUES (?,?)";
+        $idAluno = $conn->insert_id;
+        $sql1 = "INSERT INTO curriculo (aluno, curso) VALUES (?, ?)";
         $stmt1 = $conn->prepare($sql1);
-        $stmt1->bind_param('ii',$idAluno[0],$curso);
-        if ($stmt1->execute()) {echo 'success';}
+        $stmt1->bind_param('ii', $idAluno, $curso);
+        
+        if ($stmt1->execute()) {
+            echo 'Currículo cadastrado com sucesso!';
+        } else {
+            echo "Erro ao cadastrar o currículo: " . $conn->error;
+        }
+
+        // Fecha a segunda declaração
+        $stmt1->close();
     } else {
-        echo "Erro ao cadastrar o Aluno: " . $conn->error;
+        echo "Erro ao cadastrar o aluno: " . $conn->error;
     }
 
-    // Fecha a declaração e a conexão com o banco de dados
+    // Fecha a primeira declaração e a conexão
     $stmt->close();
     $conn->close();
 }
