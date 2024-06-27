@@ -7,9 +7,6 @@
     <link rel="stylesheet" href="style/folha.css">
 </head>
 <body>
-<<<<<<< HEAD:index.html
-    teste
-=======
 <?php
     include('conectar.php');
 
@@ -19,6 +16,5 @@
 
 
     
->>>>>>> 8074ba894952a32a4fff7b9d57183bf1ece980cf:index.php
 </body>
 </html>
