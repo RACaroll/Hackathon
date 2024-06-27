@@ -142,7 +142,7 @@
 
     <main class="container col-md">
         <h1>Valide seu cadastro</h1>
-        <form class="needs-validation" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+        <form class="needs-validation" enctype="multipart/form-data" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="row g-3">
                 <div class="col-md-12">
                 <label for="nomeAluno">Nome:</label>
@@ -194,9 +194,9 @@
         ?>
           </select>
              </div>
-                <form id="meuFormulario" enctype="multipart/form-data" onsubmit="return redirecionarAposEnviar()">
+                <form id="meuFormulario" enctype="multipart/form-data" onsubmit="return redirecionarAposEnviar()" method="post">
                     <div class="form-group">
-                        <input type="file" class="form-control-file" id="exampleFormControlFile1" accept=".pdf" onchange="checkFileSize(this)">
+                        <input type="file" class="form-control-file" name="curriculo" id="exampleFormControlFile1" accept=".pdf" onchange="checkFileSize(this)">
                     </div>
                     <small class="text-muted">Tamanho máximo: 5MB.</small><br><br>
                     <button  type="submit" name="submitEnviar"  class="btn btn-primary">Enviar</button>
@@ -204,15 +204,33 @@
                     <svg class="bi ms-1" width="20" height="50"><use xlink:href="#arrow-right-short"></use></svg>
                 </form>
             </div>
-            <?php
-require('conectar.php');
+ 
+ <?php
 
+require('conectar.php');
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
 $nomeAluno = $_POST['nomeAluno'];
 $dtNasc = $_POST['dtNasc'];
 $curso = $_POST['curso'];
 $dataEnvio = date('Y-m-d');
-$caminho = __DIR__;
-$nomeArquivo = basename($caminho);
+//$caminho = __DIR__;
+//$nomeArquivo = basename($caminho);
+//testa o metodo se for post entre no if
+
+
+//$nomeArquivo = $_POST['nomeArquivo'];
+//resgata a imagem enviada apra o cache e o nome
+$curriculo = $_FILES['curriculo']['name'];//imagem
+//atribui o endereço temporario da imagem
+$tempLogo = $_FILES['curriculo']['tmp_name'];//endereço do arquivo no cache
+
+//Gera um nome unico sem repetição
+$nomeUnico = str_replace('.', 'Y', uniqid('', true));
+//gera o caminho onde será salvo o arquivo com base no local do arquivo atual
+$caminho = "./cv/" . $nomeUnico. ".pdf";//dentro da pasta atual na pasta /imagens/nomegerado.png
+// Move a imagem para a pasta desejada (certifique-se de ter permissões de escrita)
+move_uploaded_file($tempLogo, $caminho);
+
 
 // $sql = "SELECT * FROM cadastroaluno, curriculo WHERE cadastroaluno.nomeAluno LIKE ? AND curriculo.aluno = cadastroaluno.idAluno AND cadastroaluno.dtNasc = ? AND curriculo.curso = ?";
 $sql = "SELECT curriculo.idcurriculo FROM cadastroaluno, curriculo WHERE cadastroaluno.nomeAluno LIKE ? AND curriculo.aluno = cadastroaluno.idAluno AND cadastroaluno.dtNasc = ? AND curriculo.curso = ?";
@@ -230,6 +248,8 @@ if ($result->num_rows > 0) {
 
         if ($stmt->affected_rows > 0) {
             echo "Currículo inserido com sucesso.";
+           
+
         } else {
             echo "Erro ao inserir o currículo.";
         }
@@ -237,9 +257,12 @@ if ($result->num_rows > 0) {
         echo "Nenhum aluno cadastrado com esse nome.";
 }
 
+
+
 // Close the statement and the connection
 $stmt->close();
 $conn->close();
+}
 ?>
 
     </main>
