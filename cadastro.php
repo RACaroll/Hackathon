@@ -3,7 +3,15 @@
 
 
 <head>
+    <meta name="description" content="Toastify is a pure JavaScript library that lets you create notifications toasts/messages.">
+    <meta name="keywords" content="Javascript,Library,Toastify">
+    <meta name="author" content="apvarun">
+    <link rel="stylesheet" type="text/css" href="example/script.css">
+    <link rel="stylesheet" type="text/css" href="src/toastify.css">
     <meta charset="UTF-8">
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro</title>
     
@@ -13,6 +21,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
         
 </head>
 
@@ -156,22 +165,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
     $stmt->bind_param("ssss", $nomeAluno, $telefone, $email, $dtNasc);
 
     if ($stmt->execute()) {
-        echo "Aluno cadastrado com sucesso!";
+        echo '<script type="text/javascript">toastr.success("Aluno cadastrado com sucesso")</script>';
         $idAluno = $conn->insert_id;
         $sql1 = "INSERT INTO curriculo (aluno, curso) VALUES (?, ?)";
         $stmt1 = $conn->prepare($sql1);
         $stmt1->bind_param('ii', $idAluno, $curso);
         
         if ($stmt1->execute()) {
-            echo 'Currículo cadastrado com sucesso!';
+            echo '<script type="text/javascript">toastr.success("Curriculo cadastrado com sucesso")</script>';
         } else {
-            echo "Erro ao cadastrar o currículo: " . $conn->error;
+            echo '<script type="text/javascript">toastr.success("Aluno cadastrado com sucesso")</script>' . $conn->error;
         }
+        
 
         // Fecha a segunda declaração
         $stmt1->close();
     } else {
-        echo "Erro ao cadastrar o aluno: " . $conn->error;
+        echo '<script type="text/javascript">toastr.success("Aluno cadastrado com sucesso")</script>' . $conn->error;
     }
 
     // Fecha a primeira declaração e a conexão
@@ -181,8 +191,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
 
     
 ?>
-
-
     <main class="container col-md">
         <h1>Formulário de Cadastro</h1>
         <form class="needs-validation" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
@@ -238,6 +246,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
 
             </div> <br> <button  type="submit" name="submitEnviar"  class="btn btn-primary">Salvar</button>
             <svg class="bi ms-1" width="20" height="50"><use xlink:href="#arrow-right-short"></use></svg>
+            
         </form>
     </main>
     <footer class="container col-md">
@@ -259,8 +268,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
     <script src="/docs/5.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
 
+    
 
 
 
@@ -268,7 +279,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
 
 
 </body>
-
+<script type="text/javascript" src="src/toastify.js"></script>
+<script type="text/javascript" src="example/script.js"></script>
 
 </html>
 
