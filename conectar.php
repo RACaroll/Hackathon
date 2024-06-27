@@ -6,8 +6,6 @@ $password = "etec2023";
 $dbname = "gestor";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
-
-// Verifica se a conexão foi estabelecida corretamente
 if ($conn->connect_error) {
     die("Falha na conexão: " . $conn->connect_error);
 }

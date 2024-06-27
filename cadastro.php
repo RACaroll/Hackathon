@@ -140,28 +140,41 @@
 <br>
 
 <?php
-
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
     // Inclui o arquivo de conexão com o banco de dados
     require('conectar.php');
 
-    $nomeAluno=$_POST['nomeAluno'];
+    $nomeAluno = $_POST['nomeAluno'];
     $telefone = $_POST['telefone'];
     $email = $_POST['email'];
     $dtNasc = $_POST['dtNasc'];
+    $curso = $_POST['curso'];
 
-    $sql = "INSERT INTO cadastroAluno(nomeAluno, telefone, email, dtNasc) VALUES (?,?,?,?)";
-   
+    // Prepara e executa a primeira consulta para inserir dados do aluno
+    $sql = "INSERT INTO cadastroAluno (nomeAluno, telefone, email, dtNasc) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssss",$nomeAluno,$telefone,$email,$dtNasc);
+    $stmt->bind_param("ssss", $nomeAluno, $telefone, $email, $dtNasc);
 
     if ($stmt->execute()) {
         echo "Aluno cadastrado com sucesso!";
+        $idAluno = $conn->insert_id;
+        $sql1 = "INSERT INTO curriculo (aluno, curso) VALUES (?, ?)";
+        $stmt1 = $conn->prepare($sql1);
+        $stmt1->bind_param('ii', $idAluno, $curso);
+        
+        if ($stmt1->execute()) {
+            echo 'Currículo cadastrado com sucesso!';
+        } else {
+            echo "Erro ao cadastrar o currículo: " . $conn->error;
+        }
+
+        // Fecha a segunda declaração
+        $stmt1->close();
     } else {
-        echo "Erro ao cadastrar o Aluno: " . $conn->error;
+        echo "Erro ao cadastrar o aluno: " . $conn->error;
     }
 
-    // Fecha a declaração e a conexão com o banco de dados
+    // Fecha a primeira declaração e a conexão
     $stmt->close();
     $conn->close();
 }
@@ -183,19 +196,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
                 </div>
 
 <!-- buscar no banco!-->
-                <div class="col-md-8">
+<div class="col-md-8">
                     <label for="curso" class="form-label">Curso:</label>
                     <select name="curso" class="form-select" id="curso" required="">
                         <option value="">Escolha...</option>
-                        <option>Desenvolvimento de Sistemas(Noturno)</option>
-                        <option>Administração</option>
-                        <option>Enfermagem</option>
-                        <option>Design Gráfico</option>
-                    </select>
+                  
                     <div class="invalid-feedback">
                         Por favor insira uma curso válido.
-                    </div>
-                </div>
+                <?php
+        // Conexão com o banco de dados
+        require('conectar.php');
+
+        $nomeCursos=$_POST['nomeCursos'];
+
+        // Consulta para buscar as montadoras
+        $sql = "SELECT * FROM cursos";
+
+        $result = $conn->query($sql);
+
+        // Verificação se há montadoras cadastradas
+        if ($result->num_rows > 0) {
+            // Loop para exibir as montadoras como opções no select
+            while($row = $result->fetch_assoc()) {
+                echo "<option value='" . $row["idCursos"]. "'>" . $row["nomeCursos"]. "</option>";
+            }
+        } else {
+            echo "<option value=''>Nenhum Curso cadastrado</option>";
+        }
+
+        // Fechamento da conexão com o banco de dados
+        $conn->close();
+        ?>
+          </select>
+             </div>
                 <div class="col-md-4">
                     <label for="telefone" class="form-label">Telefone</label>
                     <input name="telefone" type="text" class="form-control" id="telefone" placeholder="" required="">

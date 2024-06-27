@@ -146,27 +146,8 @@
             <div class="row g-3">
                 <div class="col-md-12">
                 <label for="nomeAluno">Nome:</label>
-                <input type="text" id="nomeAluno" name="nomeAluno">
-                 
-                 <?php
-        // Conexão com o banco de dados
-        require('conectar.php');
-        $nomeAluno=$_POST['nomeAluno'];
-        $user=$_POST['nomeAluno'];
-        $senha=$_POST['dtNasc'];
-
-        // Consulta para buscar as montadoras
-        $sqlAluno = "SELECT nomeAluno FROM cadastroaluno ORDER BY nomeAluno ASC";
-        $sqlValidação="SELECT * FROM cadastroaluno WHERE nomeAluno LIKE '$user' AND dtNasc LIKE '$senha'";
-
-        $result = $conn->query($sqlAluno);
-
-        // Verificação se há alunos cadastradas
+                <input id="nomeAluno" name="nomeAluno">
         
-
-        // Fechamento da conexão com o banco de dados
-        
-        ?>
              </div>
                 </div>
    
@@ -180,24 +161,107 @@
 
 
                 </div>
+                <div class="col-md-8">
+                    <label for="curso" class="form-label">Curso:</label>
+                    <select name="curso" class="form-select" id="curso" required="">
+                        <option value="">Escolha...</option>
+                  
+                    <div class="invalid-feedback">
+                        Por favor insira uma curso válido.
+                <?php
+        // Conexão com o banco de dados
+        require('conectar.php');
 
-            </div>
-          
-      
-            
-            <br> <button  type="submit" name="submitEnviar"  class="btn btn-primary">Salvar</button>
-            <svg class="bi ms-1" width="20" height="50"><use xlink:href="#arrow-right-short"></use></svg>
-        <?php
-        $resultado = $conn ->query($sqlValidação);
-        if($resultado->num_rows > 0){
-            echo "<p> subir arquivo</p>";
-        }else{
-            echo "<p> Usuário ou senha não existe</p>";
+        $nomeCursos=$_POST['nomeCursos'];
+
+        // Consulta para buscar as montadoras
+        $sql = "SELECT * FROM cursos";
+
+        $result = $conn->query($sql);
+
+        // Verificação se há montadoras cadastradas
+        if ($result->num_rows > 0) {
+            // Loop para exibir as montadoras como opções no select
+            while($row = $result->fetch_assoc()) {
+                echo "<option value='" . $row["idCursos"]. "'>" . $row["nomeCursos"]. "</option>";
+            }
+        } else {
+            echo "<option value=''>Nenhum Curso cadastrado</option>";
         }
+
+        // Fechamento da conexão com o banco de dados
         $conn->close();
         ?>
-            
-        </form>
+          </select>
+             </div>
+                <form id="meuFormulario" enctype="multipart/form-data" onsubmit="return redirecionarAposEnviar()">
+                    <div class="form-group">
+                        <input type="file" class="form-control-file" id="exampleFormControlFile1" accept=".pdf" onchange="checkFileSize(this)">
+                    </div>
+                    <small class="text-muted">Tamanho máximo: 5MB.</small><br><br>
+                    <button  type="submit" name="submitEnviar"  class="btn btn-primary">Enviar</button>
+                    </form>
+                    <svg class="bi ms-1" width="20" height="50"><use xlink:href="#arrow-right-short"></use></svg>
+                </form>
+            </div>
+            <?php
+require('conectar.php');
+
+$nomeAluno = $_POST['nomeAluno'];
+$dtNasc = $_POST['dtNasc'];
+$curso = $_POST['curso'];
+$dataEnvio = date('Y-m-d');
+$caminho = __DIR__;
+$nomeArquivo = basename($caminho);
+
+// Prepare and execute the first SELECT query
+$sql = "SELECT idAluno FROM cadastroaluno WHERE nomeAluno = ? AND dtNasc = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("ss", $nomeAluno, $dtNasc);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    // Fetch the student's ID
+    $row = $result->fetch_assoc();
+    $idAluno = $row['idAluno'];
+
+    
+    $sql = "SELECT * FROM curriculo WHERE aluno = ? AND curso = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ii", $idAluno, $curso);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows == 0) {
+        
+
+        $sql = "INSERT INTO curriculo(nomeArquivo, dataEnvio, caminho, aluno, curso) VALUES (?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sssii", $nomeArquivo, $dataEnvio, $caminho, $idAluno, $curso);
+        $stmt->execute();
+
+        if ($stmt->affected_rows > 0) {
+            echo "Currículo inserido com sucesso.";
+           
+
+        } else {
+            echo "Erro ao inserir o currículo.";
+        }
+    } else {
+        echo "Currículo já existe.";
+    }
+} else {
+    echo "Nenhum aluno cadastrado com esse nome.";
+}
+
+
+
+// Close the statement and the connection
+$stmt->close();
+$conn->close();
+?>
+
     </main>
     <footer class="container col-md">
         <br>
