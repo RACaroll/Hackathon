@@ -214,30 +214,18 @@ $dataEnvio = date('Y-m-d');
 $caminho = __DIR__;
 $nomeArquivo = basename($caminho);
 
-// Prepare and execute the first SELECT query
-$sql = "SELECT idAluno FROM cadastroaluno WHERE nomeAluno = ? AND dtNasc = ?";
+// $sql = "SELECT * FROM cadastroaluno, curriculo WHERE cadastroaluno.nomeAluno LIKE ? AND curriculo.aluno = cadastroaluno.idAluno AND cadastroaluno.dtNasc = ? AND curriculo.curso = ?";
+$sql = "SELECT curriculo.idcurriculo FROM cadastroaluno, curriculo WHERE cadastroaluno.nomeAluno LIKE ? AND curriculo.aluno = cadastroaluno.idAluno AND cadastroaluno.dtNasc = ? AND curriculo.curso = ?";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("ss", $nomeAluno, $dtNasc);
+$stmt->bind_param("ssi", $nomeAluno, $dtNasc, $curso);
 $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
-    // Fetch the student's ID
-    $row = $result->fetch_assoc();
-    $idAluno = $row['idAluno'];
-
-    // Prepare and execute the second SELECT query
-    $sql = "SELECT * FROM curriculo WHERE aluno = ? AND curso = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ii", $idAluno, $curso);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows == 0) {
-        // Insert the new curriculum entry
-        $sql = "INSERT INTO curriculo(nomeArquivo, dataEnvio, caminho, aluno, curso) VALUES (?, ?, ?, ?, ?)";
+        $cur = $result->fetch_assoc();
+        $sql = "UPDATE curriculo SET nomeArquivo = ?, dataEnvio = ?, caminho = ? WHERE (idcurriculo = ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssii", $nomeArquivo, $dataEnvio, $caminho, $idAluno, $curso);
+        $stmt->bind_param("sssi", $nomeArquivo, $dataEnvio, $caminho, $cur['idcurriculo']);
         $stmt->execute();
 
         if ($stmt->affected_rows > 0) {
@@ -246,10 +234,7 @@ if ($result->num_rows > 0) {
             echo "Erro ao inserir o currículo.";
         }
     } else {
-        echo "Currículo já existe.";
-    }
-} else {
-    echo "Nenhum aluno cadastrado com esse nome.";
+        echo "Nenhum aluno cadastrado com esse nome.";
 }
 
 // Close the statement and the connection
