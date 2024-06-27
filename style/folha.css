@@ -1,0 +1,70 @@
+body {
+    background-color: azure;
+}
+
+.logoMontadora {
+    max-width: 36px;
+    max-height: 36px;
+}
+
+.dropdownmenu ul, .dropdownmenu li {
+	margin: 0;
+	padding: 0;
+}
+.dropdownmenu ul {
+	background: gray;
+	list-style: none;
+	width: 100%;
+}
+.dropdownmenu li {
+	float: left;
+	position: relative;
+	width:auto;
+}
+.dropdownmenu a {
+	background: #30A6E6;
+	color: #FFFFFF;
+	display: block;
+	font: bold 12px/20px sans-serif; /* 1.font-style 2.font-variant 3.font-weight 4.font-size/line-height 5.font-family */
+	padding: 10px 25px;
+	text-align: center;
+	text-decoration: none;
+	-webkit-transition: all .25s ease;/*motor de renderização utilizado em navegadores web para renderizar páginas -webkit para o Chrome e o Safari, -moz para o Firefox, -o para o Opera, -ms para o Internet Explorer */
+	-moz-transition: all .25s ease;
+	-ms-transition: all .25s ease;
+	-o-transition: all .25s ease;
+	transition: all .25s ease;
+}
+
+.dropdownmenu li:hover a {
+	background: #120061;
+}
+#submenu {
+	left: 0;
+	opacity: 0;
+	position: absolute;
+    width: 125px;
+	top: 35px;
+	visibility: hidden;
+	z-index: 1; /* Propriedade que determina a profundidade de exibição de um elemento, qual maior maior prioridade de visão */
+}
+li:hover ul#submenu {
+	opacity: 1;
+	top: 40px;	
+	visibility: visible;
+}
+#submenu li {
+	float: none;
+	width: 100%;
+}
+#submenu a:hover {
+	background: #40c4f8;
+}
+#submenu a {
+	background-color:#220d81;
+}
+
+form{
+    border-radius: 5px;
+    border: 2px solid #220d81;
+}
