@@ -233,6 +233,19 @@ move_uploaded_file($tempLogo, $caminho);
 
 
 // $sql = "SELECT * FROM cadastroaluno, curriculo WHERE cadastroaluno.nomeAluno LIKE ? AND curriculo.aluno = cadastroaluno.idAluno AND cadastroaluno.dtNasc = ? AND curriculo.curso = ?";
+$curriculo = $_FILES['curriculo']['name'];//imagem
+//atribui o endereço temporario da imagem
+$tempLogo = $_FILES['curriculo']['tmp_name'];//endereço do arquivo no cache
+
+//Gera um nome unico sem repetição
+$nomeUnico = str_replace('.', 'Y', uniqid('', true));
+//gera o caminho onde será salvo o arquivo com base no local do arquivo atual
+$caminho = "./cv/" . $nomeUnico. ".pdf";//dentro da pasta atual na pasta /imagens/nomegerado.png
+// Move a imagem para a pasta desejada (certifique-se de ter permissões de escrita)
+move_uploaded_file($tempLogo, $caminho);
+
+
+// $sql = "SELECT * FROM cadastroaluno, curriculo WHERE cadastroaluno.nomeAluno LIKE ? AND curriculo.aluno = cadastroaluno.idAluno AND cadastroaluno.dtNasc = ? AND curriculo.curso = ?";
 $sql = "SELECT curriculo.idcurriculo FROM cadastroaluno, curriculo WHERE cadastroaluno.nomeAluno LIKE ? AND curriculo.aluno = cadastroaluno.idAluno AND cadastroaluno.dtNasc = ? AND curriculo.curso = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("ssi", $nomeAluno, $dtNasc, $curso);
