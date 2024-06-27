@@ -5,6 +5,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+  <style>
+    .inactive {
+      background-color: #d3d3d3;
+    }
+  </style>
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
@@ -55,59 +60,81 @@
     </form>
 
     <div class="list-group">
-    <a href="#" class="list-group-item list-group-item-action active" aria-current="true">
+      <a href="#" class="list-group-item list-group-item-action active" aria-current="true">
         Lista de Currículos
-    </a>
+      </a>
 
-    <?php
-    include('conectar.php');
+      <?php
+      include('conectar.php');
 
-    if ($conn->connect_error) {
-        die("Conexão falhou: " . $conn->connect_error);
-    }
+      if ($conn->connect_error) {
+          die("Conexão falhou: " . $conn->connect_error);
+      }
 
-    $sql = "SELECT cadastroaluno.idAluno, cadastroaluno.nomeAluno, cadastroaluno.dtNasc, cursos.nomeCursos 
-            FROM cadastroaluno 
-            JOIN curriculo ON cadastroaluno.idAluno = curriculo.aluno
-            JOIN cursos ON curriculo.curso = cursos.idCursos
-            WHERE 1=1";
+      // Atualizar o status do currículo se a solicitação POST for feita
+      if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+          if (isset($_POST['id']) && isset($_POST['status'])) {
+              $id = $conn->real_escape_string($_POST['id']);
+              $status = $conn->real_escape_string($_POST['status']);
 
-    if (isset($_GET['search']) && !empty($_GET['search'])) {
-        $search = $conn->real_escape_string($_GET['search']);
-        $sql .= " AND cadastroaluno.nomeAluno LIKE '%$search%'";
-    }
+              $sqlUpdate = "UPDATE curriculo SET status = '$status' WHERE aluno = '$id'";
+              if ($conn->query($sqlUpdate) === TRUE) {
+                  echo '<div class="alert alert-success" role="alert">Status atualizado com sucesso!</div>';
+              } else {
+                  echo '<div class="alert alert-danger" role="alert">Erro ao atualizar status.</div>';
+              }
+          }
+      }
 
-    if (isset($_GET['curso']) && !empty($_GET['curso'])) {
-        $curso = $conn->real_escape_string($_GET['curso']);
-        $sql .= " AND curriculo.curso = '$curso'";
-    }
+      // Consultar currículos
+      $sql = "SELECT cadastroaluno.idAluno, cadastroaluno.nomeAluno, cadastroaluno.dtNasc, cursos.nomeCursos, curriculo.status 
+              FROM cadastroaluno 
+              JOIN curriculo ON cadastroaluno.idAluno = curriculo.aluno
+              JOIN cursos ON curriculo.curso = cursos.idCursos
+              WHERE 1=1";
 
-    $sql .= " ORDER BY cadastroaluno.nomeAluno ASC";
+      if (isset($_GET['search']) && !empty($_GET['search'])) {
+          $search = $conn->real_escape_string($_GET['search']);
+          $sql .= " AND cadastroaluno.nomeAluno LIKE '%$search%'";
+      }
 
-    $result = $conn->query($sql);
+      if (isset($_GET['curso']) && !empty($_GET['curso'])) {
+          $curso = $conn->real_escape_string($_GET['curso']);
+          $sql .= " AND curriculo.curso = '$curso'";
+      }
 
-    if ($result->num_rows > 0) {
-        while($row = $result->fetch_assoc()) {
-            // Construir o link com base no ID do aluno
-            echo '<a href="listacurriculos.php?id=' . $row["idAluno"] . '" class="list-group-item list-group-item-action">';
-            echo '<div class="d-flex w-100 justify-content-between">';
-            echo '<h5 class="mb-1">' . htmlspecialchars($row["nomeAluno"]) . '</h5>';
-            echo '<small>Data de Nascimento: ' . date('d/m/Y', strtotime($row["dtNasc"])) . '</small>';
-            echo '<small>Curso: ' . htmlspecialchars($row["nomeCursos"]) . '</small>';
-            echo '</div>';
-            echo '</a>';
-        }
-    } else {
-        echo '<p>Nenhum currículo encontrado.</p>';
-    }
+      $sql .= " ORDER BY cadastroaluno.nomeAluno ASC";
 
-    $conn->close();
-    ?>
+      $result = $conn->query($sql);
 
-</div>
+      if ($result->num_rows > 0) {
+          while($row = $result->fetch_assoc()) {
+              $rowClass = $row["status"] ? '' : ' inactive';
+              echo '<div class="list-group-item list-group-item-action' . $rowClass . '">';
+              echo '<div class="d-flex w-100 justify-content-between">';
+              echo '<h5 class="mb-1">' . htmlspecialchars($row["nomeAluno"]) . '</h5>';
+              echo '<small>Data de Nascimento: ' . date('d/m/Y', strtotime($row["dtNasc"])) . '</small>';
+              echo '<small>Curso: ' . htmlspecialchars($row["nomeCursos"]) . '</small>';
+              echo '</div>';
+              // Adiciona o botão de toggle para o status
+              echo '<form method="POST" action="" class="d-inline">';
+              echo '<input type="hidden" name="id" value="' . $row["idAluno"] . '">';
+              echo '<input type="hidden" name="status" value="' . ($row["status"] ? 0 : 1) . '">';
+              echo '<button type="submit" class="btn btn-sm ' . ($row["status"] ? 'btn-success' : 'btn-secondary') . '">';
+              echo $row["status"] ? 'Ativo' : 'Inativo';
+              echo '</button>';
+              echo '</form>';
+              echo '</div>';
+          }
+      } else {
+          echo '<p>Nenhum currículo encontrado.</p>';
+      }
 
+      $conn->close();
+      ?>
+    </div>
 
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
 </body>
