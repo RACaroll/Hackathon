@@ -1,8 +1,8 @@
 <?php
 // Variaveis para conectar ao banco de dados
-$servername = "localhost:3306";
+$servername = "localhost:3308";
 $username = "root";
-$password = "um2tres4";
+$password = "etec2023";
 $dbname = "gestor";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
