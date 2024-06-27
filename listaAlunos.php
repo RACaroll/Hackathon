@@ -55,65 +55,57 @@
     </form>
 
     <div class="list-group">
-      <a href="#" class="list-group-item list-group-item-action active" aria-current="true">
+    <a href="#" class="list-group-item list-group-item-action active" aria-current="true">
         Lista de Currículos
-      </a>
-      
-      <?php
-      
-      include('conectar.php');
+    </a>
 
-    
-      if ($conn->connect_error) {
+    <?php
+    include('conectar.php');
+
+    if ($conn->connect_error) {
         die("Conexão falhou: " . $conn->connect_error);
-      }
+    }
 
-      
-      $sql = "SELECT cadastroaluno.idAluno, cadastroaluno.nomeAluno, cadastroaluno.dtNasc, cursos.nomeCursos 
-              FROM cadastroaluno 
-              JOIN curriculo ON cadastroaluno.idAluno = curriculo.aluno
-              JOIN cursos ON curriculo.curso = cursos.idCursos
-              WHERE 1=1";
+    $sql = "SELECT cadastroaluno.idAluno, cadastroaluno.nomeAluno, cadastroaluno.dtNasc, cursos.nomeCursos 
+            FROM cadastroaluno 
+            JOIN curriculo ON cadastroaluno.idAluno = curriculo.aluno
+            JOIN cursos ON curriculo.curso = cursos.idCursos
+            WHERE 1=1";
 
-    
-      if (isset($_GET['search']) && !empty($_GET['search'])) {
+    if (isset($_GET['search']) && !empty($_GET['search'])) {
         $search = $conn->real_escape_string($_GET['search']);
         $sql .= " AND cadastroaluno.nomeAluno LIKE '%$search%'";
-      }
+    }
 
-      if (isset($_GET['curso']) && !empty($_GET['curso'])) {
+    if (isset($_GET['curso']) && !empty($_GET['curso'])) {
         $curso = $conn->real_escape_string($_GET['curso']);
         $sql .= " AND curriculo.curso = '$curso'";
-      }
+    }
 
-     
-      $sql .= " ORDER BY cadastroaluno.nomeAluno ASC";
+    $sql .= " ORDER BY cadastroaluno.nomeAluno ASC";
 
-     
-      $result = $conn->query($sql);
+    $result = $conn->query($sql);
 
-      
-      if ($result->num_rows > 0) {
-    
+    if ($result->num_rows > 0) {
         while($row = $result->fetch_assoc()) {
-          echo '<a href="#" class="list-group-item list-group-item-action">';
-          echo '<div class="d-flex w-100 justify-content-between">';
-          echo '<h5 class="mb-1">' . htmlspecialchars($row["nomeAluno"]) . '</h5>';
-          echo '<small>Data de Nascimento: ' . date('d/m/Y', strtotime($row["dtNasc"])) . '</small>';
-          echo '<small>Curso: ' . htmlspecialchars($row["nomeCursos"]) . '</small>';
-          echo '</div>';
-          echo '</a>';
+            // Construir o link com base no ID do aluno
+            echo '<a href="listacurriculos.php?id=' . $row["idAluno"] . '" class="list-group-item list-group-item-action">';
+            echo '<div class="d-flex w-100 justify-content-between">';
+            echo '<h5 class="mb-1">' . htmlspecialchars($row["nomeAluno"]) . '</h5>';
+            echo '<small>Data de Nascimento: ' . date('d/m/Y', strtotime($row["dtNasc"])) . '</small>';
+            echo '<small>Curso: ' . htmlspecialchars($row["nomeCursos"]) . '</small>';
+            echo '</div>';
+            echo '</a>';
         }
-      } else {
+    } else {
         echo '<p>Nenhum currículo encontrado.</p>';
-      }
+    }
 
-     
-      $conn->close();
-      ?>
-      
-    </div>
-  </div>
+    $conn->close();
+    ?>
+
+</div>
+
 
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" crossorigin="anonymous"></script>
