@@ -207,6 +207,7 @@
  
  <?php
 
+
 require('conectar.php');
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 $nomeAluno = $_POST['nomeAluno'];
