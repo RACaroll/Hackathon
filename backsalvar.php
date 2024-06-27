@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {//testa o metodo se for post entre no
     move_uploaded_file($tempLogo, $caminho);
     
     // Insere os dados no banco de dados
-    $sql = "UPDATE curriculo SET nomeArquivo ='$nomeArquivo', caminho='$caminho' where idcurriculo=1";
+ $sql = "UPDATE curriculo SET nomeArquivo ='$nomeArquivo', caminho='$caminho' where idcurriculo=1";
 
     if ($conn->query($sql) === TRUE) {//verifica se a inserção ocorreu sem erros
         echo "sucesso!";//mensagem de sucesso
