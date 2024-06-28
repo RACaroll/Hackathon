@@ -163,6 +163,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
 
     
     
+    $sql = "SELECT curriculo.idcurriculo FROM cadastroaluno, curriculo WHERE cadastroaluno.nomeAluno LIKE ? AND curriculo.aluno = cadastroaluno.idAluno AND cadastroaluno.dtNasc = ? AND curriculo.aluno = cadastroaluno.idAluno AND curriculo.status = 1";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ss", $nomeAluno, $dtNasc);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // Verifica o número de cursos ativos
+    if ($result->num_rows >= 2) {
+        echo "Não é possível cadastrar um novo curso. O aluno já possui dois cursos ativos.";
+    } else {
+
     // Prepara e executa a primeira consulta para inserir dados do aluno
     $sql = "INSERT INTO cadastroAluno (nomeAluno, telefone, email, dtNasc) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
@@ -187,7 +198,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
     } else {
         echo '<script type="text/javascript">toastr.success("Aluno cadastrado com sucesso")</script>' . $conn->error;
     }
-
+    }
     // Fecha a primeira declaração e a conexão
     $stmt->close();
     $conn->close();
