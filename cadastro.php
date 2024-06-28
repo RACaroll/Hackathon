@@ -152,13 +152,17 @@
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
     // Inclui o arquivo de conexão com o banco de dados
     require('conectar.php');
-
+        
     $nomeAluno = $_POST['nomeAluno'];
     $telefone = $_POST['telefone'];
     $email = $_POST['email'];
     $dtNasc = $_POST['dtNasc'];
     $curso = $_POST['curso'];
+    $telefone = str_replace("-","",$telefone);
+    $telefone=(filter_var($telefone,FILTER_SANITIZE_NUMBER_INT));
 
+    
+    
     // Prepara e executa a primeira consulta para inserir dados do aluno
     $sql = "INSERT INTO cadastroAluno (nomeAluno, telefone, email, dtNasc) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
@@ -174,7 +178,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
         if ($stmt1->execute()) {
             echo '<script type="text/javascript">toastr.success("Curriculo cadastrado com sucesso")</script>';
         } else {
-            echo '<script type="text/javascript">toastr.success("Aluno cadastrado com sucesso")</script>' . $conn->error;
+            echo '<script type="text/javascript">toastr.warning("Falha ao cadastrar o curriculo")</script>' . $conn->error;
         }
         
 
@@ -197,26 +201,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
             <div class="row g-3">
                 <div class="col-md-12">
                     <label for="nomeAluno" class="form-label">Nome:</label>
-                    <input name="nomeAluno" type="text" class="form-control" id="nomeAluno" placeholder="" value="" required="">
+                    <input name="nomeAluno" type="text" class="form-control" id="nomeAluno" placeholder="Nome Sobrenome" pattern="[A-Za-a]{}" value="" required="">
                     <div class="invalid-feedback">
                         Verifique se o nome está correto.
                     </div>
                 </div>
 
 <!-- buscar no banco!-->
-                <div class="col-md-8">
+<div class="col-md-8">
                     <label for="curso" class="form-label">Curso:</label>
                     <select name="curso" class="form-select" id="curso" required="">
-                        <option value="1">Escolha...</option>
-                        <option value="2">Desenvolvimento de Sistemas(Noturno)</option>
-                        <option value="3">Administração</option>
-                        <option value="4">Enfermagem</option>
-                        <option value="5">Design Gráfico</option>
-                    </select>
+                        <option value="">Escolha...</option>
+                  
                     <div class="invalid-feedback">
                         Por favor insira uma curso válido.
-                    </div>
-                </div>
+                <?php
+        // Conexão com o banco de dados
+        require('conectar.php');
+
+        $nomeCursos=$_POST['nomeCursos'];
+
+        // Consulta para buscar as montadoras
+        $sql = "SELECT * FROM cursos";
+
+        $result = $conn->query($sql);
+
+        // Verificação se há montadoras cadastradas
+        if ($result->num_rows > 0) {
+            // Loop para exibir as montadoras como opções no select
+            while($row = $result->fetch_assoc()) {
+                echo "<option value='" . $row["idCursos"]. "'>" . $row["nomeCursos"]. "</option>";
+            }
+        } else {
+            echo "<option value=''>Nenhum Curso cadastrado</option>";
+        }
+
+        // Fechamento da conexão com o banco de dados
+        $conn->close();
+        ?>
+          </select>
+             </div>
                 <div class="col-md-4">
                     <label for="telefone" class="form-label">Telefone</label>
                     <input name="telefone" type="text" class="form-control" id="telefone" placeholder="" required="">
@@ -228,7 +252,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitEnviar'])) {
 
                 <div class="col-md-6">
                     <label for="email" class="form-label">E-mail</label>
-                    <input name="email" type="text" class="form-control" id="email" placeholder="" required="">
+                    <input name="email" type="email" class="form-control" id="email"placeholder="" required="">
                     <div class="invalid-feedback">
                         Por favor insira um E-mail válido.
                     </div>
